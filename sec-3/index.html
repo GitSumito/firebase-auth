@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>My App with Auth</title>
+		<link rel="stylesheet" href="styles.css">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nothing+You+Could+Do">
+		<link rel="icon" href="images/favicon.png" type="images/png">
+		<script src="https://www.gstatic.com/firebasejs/5.7.2/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/5.7.2/firebase-auth.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/5.7.2/firebase-storage.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/5.7.2/firebase-database.js"></script>
+	</head>
+	<body>
+
+		<!-- Email not verified notification -->
+		<div id="email-not-verified-notification" class="hide"></div>
+		<!-- Email not verified notification -->
+
+		<!-- Header -->
+		<div id="header">
+			<div>
+				<img src="images/logo.png" alt="logo" id="logo">
+			</div>
+			<div class="hide-when-signed-in">
+				<span id="sign-in-link-header" class="auth" auth="show-sign-in-form">Sign In</span>
+				<button id="create-user-link-header" class="auth" auth="show-create-user-form">Create User</button>
+			</div>
+			<div class="hide-when-signed-out hide" id="user-details-header">
+				<img id="profile-photo-header" src="images/user.png" alt="user"> <h1 id="display-name"></h1>
+			</div>
+		</div>
+		<!-- Header -->
+
+		<!-- Hero Banner -->
+		<img src="images/hero-banner.png" alt="hero banner" class="hide-when-signed-in">
+		<!-- Hero Banner -->
+
+		<!-- Dashboard -->
+		<div id="dashboard" class="hide-when-signed-out">
+			<div>
+				<form id="to-do-list-form">
+					<h1>New task</h1>
+					<input type="text" id="item" placeholder="Task", required autocomplete="off">
+					<button type="submit">Add</button>
+				</form>
+			</div>
+			<div>
+				<h1>To do list</h1>
+				<div id="to-do-list-items"></div>
+			</div>
+			<div>
+				<div id="account">
+					<h1>Account</h1>
+					<img src="images/user.png" alt="user" id="profile-photo-account">
+
+					<div id="progress-bar"></div>
+					<input type="file" id="upload-profile-photo-button" accept="image/x-png, image/gif, image/jpeg">
+
+					<button class="auth" auth="sign-out">Sign Out</button>
+
+					<div id="show-delete-account-dialog-trigger" class="auth" auth="show-delete-account-dialog">Delete Account</div>
+					<div id="delete-account-dialog" class="hide">
+						<p>Are you sure you want to delete your account</p>
+						<button id="delete-account" class="auth" auth="delete-account">Delete</button>
+						<button id="hide-delete-account-dialog-trigger" class="auth" auth="hide-delete-account-dialog">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Dashboard -->
+
+		<!-- Footer -->
+		<div id="footer">
+			<div>
+				<p>
+					<b>About</b><br>
+					<i>Expertly Authenticate Users</i>
+				</p>
+			</div>
+			<div>
+				<p>
+					<b>Firebase</b><br>
+					<i>Authentication, Hosting, Database, Storage</i>
+				</p>
+			</div>
+			<div>
+				<p>
+					<b>Language</b><br>
+					<i>Modern ES6 JavaScript</i>
+				</p>
+			</div>
+		</div>
+		<!-- Footer -->
+
+
+		<!-- Modal -->
+		<div id="modal">
+			<!-- Modal Content -->
+			<div id="modal-content">
+				<button id="close">&times</button>
+				<!-- Authentication -->
+				<div id="authentication">
+
+					<!-- OAuth -->
+					<div id="oauth-providers">
+						<div id="oauth-providers-grid">
+							<img src="images/oauth-providers/google.png" alt="Google" class="auth" auth="sign-in-with-google">
+							<img src="images/oauth-providers/facebook.png" alt="Facebook" class="auth" auth="sign-in-with-facebook">
+							<img src="images/oauth-providers/github.png" alt="Github" class="auth" auth="sign-in-with-github">
+							<img src="images/oauth-providers/twitter.png" alt="Twitter" class="auth" auth="sign-in-with-twitter">
+						</div>
+						<div id="or">
+							<p>or</p>
+						</div>
+					</div>
+
+					
+					<!-- OAuth -->
+
+					<!-- Create user form -->
+					<form id="create-user-form">
+						<div id="create-user-inputs">
+							<input type="text" id="create-user-display-name" placeholder="Display Name" required autocomplete="off">
+							<input type="email" id="create-user-email" placeholder="Email" required autocomplete="off">
+							<input type="password" id="create-user-password" placeholder="Password" required autocomplete="off">
+						</div>
+						<button id="create-user-button" type="submit">Create User</button>
+					</form>
+					<!-- Create user form -->
+
+					<!-- Sign in form -->
+					<form id="sign-in-form">
+						<div id="sign-in-inputs">
+							<input type="email" id="sign-in-email" placeholder="Email" required autocomplete="off">
+							<input type="password" id="sign-in-password" placeholder="Password" required autocomplete="off">
+						</div>
+
+						<div id="forgot-password-link" class="auth" auth="show-forgot-password-form">Forgot?</div>
+						<button id="sign-in-button" type="submit">Sign In</button>
+					</form>
+					<!-- Sign in form -->
+
+					<!-- Forgot password form form -->
+					<form id="forgot-password-form">
+						<div id="forgot-password-inputs">
+							<input type="email" id="forgot-password-email" placeholder="Email" required autocomplete="off">
+						</div>
+						<button id="forgot-password-button" type="submit">Send Recovery Email</button>
+					</form>
+					<!-- Forgot password form form -->
+
+					<!-- Success and error messages -->
+					<div id="message"></div>
+					<!-- Success and error messages -->
+
+					<!-- Loading visual cue -->
+					<div id="loading-outer-container">
+						<div id="loading-inner-container">
+							<div id="loadspin">
+								<div id="circle1"></div>
+								<div id="circle2"></div>
+							</div>
+						</div>
+					</div>
+					<!-- Loading visual cue -->
+
+					<!-- Have or need account dialog -->
+					<div id="have-or-need-account-dialog">
+						<p id="create-user-dialog">
+							Don't have an account? 
+							<span id="create-user-link" class="auth" auth="show-create-user-form">
+								Create User
+							</span>
+						</p>
+						<p id="sign-in-dialog">
+							Already have an account? 
+							<span id="sign-in-link" class="auth" auth="show-sign-in-form">
+								Sign In
+							</span>
+						</p>
+					</div>
+					<!-- Have or need account dialog -->
+
+					
+				</div>
+				<!-- Authentication -->
+			</div>
+			<!-- Modal Content -->
+		</div>
+		<!-- Modal -->
+
+
+		<script src="app.js"></script>
+	</body>
+</html>
